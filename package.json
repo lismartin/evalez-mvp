@@ -1,0 +1,31 @@
+{
+  "name": "evalez-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.1.1",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test:rules": "node --experimental-strip-types tools/verify-p1-rule-fixtures.ts",
+    "test:worker-safety": "node --experimental-strip-types analysis-worker/src/verify-safety.ts",
+    "worker:fixture": "node --experimental-strip-types analysis-worker/src/run-local-fixture-job.ts",
+    "test:dns": "node --experimental-strip-types analysis-worker/src/verify-dns-verifier.ts",
+    "test:authorization": "node --experimental-strip-types analysis-worker/src/verify-authorization-gate.ts",
+    "test:egress": "node --experimental-strip-types analysis-worker/src/verify-controlled-egress.ts"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.118.0",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
+  }
+}

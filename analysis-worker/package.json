@@ -1,0 +1,12 @@
+{
+  "name": "evalez-analysis-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:safety": "node --experimental-strip-types src/verify-safety.ts",
+    "run:fixture": "node --experimental-strip-types src/run-local-fixture-job.ts",
+    "test:dns": "node --experimental-strip-types src/verify-dns-verifier.ts",
+    "test:authorization": "node --experimental-strip-types src/verify-authorization-gate.ts",
+    "test:egress": "node --experimental-strip-types src/verify-controlled-egress.ts"
+  }
+}
