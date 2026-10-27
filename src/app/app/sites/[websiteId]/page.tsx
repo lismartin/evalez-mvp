@@ -4,9 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import { listLocalFixtureJobs } from "@/lib/local-fixture-queue";
 import styles from "@/components/workspace.module.css";
 import { enqueueFixtureRun } from "./fixture-actions";
-import { requestDnsChallenge, requestStatic1Authorization } from "./host-actions";
+import { requestDnsChallenge, requestStatic1Authorization, scheduleStatic1Run } from "./host-actions";
 
-type PageProps = { params: Promise<{ websiteId: string }>; searchParams: Promise<{ fixture?: string; verification?: string; authorization?: string }> };
+type PageProps = { params: Promise<{ websiteId: string }>; searchParams: Promise<{ fixture?: string; verification?: string; authorization?: string; run?: string }> };
 
 function dateLabel(value: string) {
   return new Intl.DateTimeFormat("es", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
@@ -19,7 +19,7 @@ function eventLabel(eventType: string) {
 
 export default async function WebsiteDetailPage({ params, searchParams }: PageProps) {
   const { websiteId } = await params;
-  const { fixture, verification, authorization } = await searchParams;
+  const { fixture, verification, authorization, run } = await searchParams;
   const supabase = await createClient();
   const { data: claimsData } = await supabase.auth.getClaims();
   const userId = claimsData?.claims?.sub;
@@ -106,6 +106,7 @@ export default async function WebsiteDetailPage({ params, searchParams }: PagePr
             isOwner={membership.role === "owner"}
             verificationFeedback={verification}
             authorizationFeedback={authorization}
+            runFeedback={run}
           />
         ))}
       </section>
@@ -115,6 +116,7 @@ export default async function WebsiteDetailPage({ params, searchParams }: PagePr
           <p className="section-label">Solo desarrollo local</p>
           <h2>Cola de fixtures</h2>
           <p>Esta cola no contacta el host registrado ni crea un informe para clientes. Solo envía datos controlados al worker local para comprobar la conexión entre componentes.</p>
+          <Link className={styles.reportLink} href="/app/report-preview">Ver visualización de informe de prueba</Link>
           {fixture === "queued" && <p className={styles.status}>Fixture encolado. Ejecuta el worker desde otra terminal.</p>}
           <form action={enqueueFixtureRun}><input type="hidden" name="websiteId" value={website.id} /><button className="primary-button" type="submit">Encolar fixture local</button></form>
           {!fixtureJobs.length ? <p>Aún no hay fixtures locales para este sitio.</p> : <ul className={styles.eventList}>{fixtureJobs.map((job) => <li key={job.id}><strong>{job.status === "queued" ? "En cola" : job.status === "running" ? "En ejecución" : "Completado"}</strong><time>{dateLabel(job.createdAt)}</time>{job.result && <p>{job.result.passed} correctas · {job.result.findings} hallazgos · {job.result.blocked} bloqueadas</p>}</li>)}</ul>}
@@ -128,7 +130,7 @@ export default async function WebsiteDetailPage({ params, searchParams }: PagePr
           <p>Aún no hay ejecuciones. Un worker aislado creará las ejecuciones únicamente después de que este host tenga control y autorización válidos.</p>
         ) : (
           <ul className={styles.eventList}>
-            {analysisRuns.map((run) => <li key={run.id}><strong>{run.profile_id} · {run.status}</strong><time>{dateLabel(run.created_at)}</time></li>)}
+            {analysisRuns.map((run) => <li key={run.id}><Link className={styles.reportLink} href={`/app/sites/${website.id}/reports/${run.id}`}>{run.profile_id} · {run.status}</Link><time>{dateLabel(run.created_at)}</time></li>)}
           </ul>
         )}
       </section>
@@ -155,7 +157,8 @@ function HostControls({
   authorizationRequest,
   isOwner,
   verificationFeedback,
-  authorizationFeedback
+  authorizationFeedback,
+  runFeedback
 }: {
   websiteId: string;
   host: { id: string; hostname: string; verification_status: string; authorization_status: string; verification_method: string | null; authorization_profile: string | null };
@@ -164,7 +167,15 @@ function HostControls({
   isOwner: boolean;
   verificationFeedback?: string;
   authorizationFeedback?: string;
+  runFeedback?: string;
 }) {
+  const canSchedule =
+    isOwner &&
+    host.verification_status === "verified" &&
+    host.authorization_status === "authorized" &&
+    host.authorization_profile === "STATIC-1" &&
+    authorizationRequest?.status === "approved";
+
   return (
     <div className={styles.eventList}>
       <strong>{host.hostname}</strong>
@@ -174,6 +185,9 @@ function HostControls({
       <p>Autorización de análisis: {host.authorization_status === "authorized" ? "autorizada" : "pendiente"}. Perfil: {host.authorization_profile ?? "sin asignar"}.</p>
       {authorizationRequest?.status === "pending" ? <p>Solicitud pendiente para {authorizationRequest.profile_id} v{authorizationRequest.profile_version}. Esto no autoriza todavía ningún análisis.</p> : isOwner ? <form action={requestStatic1Authorization}><input type="hidden" name="websiteId" value={websiteId} /><input type="hidden" name="hostId" value={host.id} /><button className="secondary-button" type="submit">Solicitar autorización STATIC-1</button></form> : <p>Solo el propietario de la organización puede solicitar autorización.</p>}
       {authorizationFeedback === "error" && <p>La solicitud no pudo guardarse. Comprueba que aplicaste la migración correspondiente.</p>}
+      {canSchedule ? <form action={scheduleStatic1Run}><input type="hidden" name="websiteId" value={websiteId} /><input type="hidden" name="hostId" value={host.id} /><button className="primary-button" type="submit">Programar análisis STATIC-1</button></form> : <p>El análisis solo podrá programarse cuando este host tenga control DNS y autorización STATIC-1 aprobados.</p>}
+      {runFeedback === "scheduled" && <p className={styles.status}>Ejecución programada. Aún no se iniciará tráfico: falta conectar el consumidor de la cola del worker.</p>}
+      {runFeedback === "error" && <p>La ejecución no pudo programarse. Comprueba que la verificación, autorización y migración estén vigentes.</p>}
     </div>
   );
 }

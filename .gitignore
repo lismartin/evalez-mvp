@@ -4,5 +4,6 @@ out/
 .env*
 !.env.example
 *.log
+*.tsbuildinfo
 data/
 package-lock.json

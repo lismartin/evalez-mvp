@@ -84,3 +84,16 @@ export async function requestStatic1Authorization(formData: FormData) {
   }
   redirect(`/app/sites/${websiteId}?authorization=${error ? "error" : "requested"}`);
 }
+
+export async function scheduleStatic1Run(formData: FormData) {
+  const websiteId = String(formData.get("websiteId") ?? "");
+  const hostId = String(formData.get("hostId") ?? "");
+  const context = await ownerContext(websiteId, hostId);
+
+  const { error } = await context.supabase.rpc("schedule_authorized_static1_run", {
+    p_website_id: websiteId,
+    p_website_host_id: hostId
+  });
+
+  redirect(`/app/sites/${websiteId}?run=${error ? "error" : "scheduled"}`);
+}

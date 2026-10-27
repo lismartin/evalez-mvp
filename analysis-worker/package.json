@@ -7,6 +7,15 @@
     "run:fixture": "node --experimental-strip-types src/run-local-fixture-job.ts",
     "test:dns": "node --experimental-strip-types src/verify-dns-verifier.ts",
     "test:authorization": "node --experimental-strip-types src/verify-authorization-gate.ts",
-    "test:egress": "node --experimental-strip-types src/verify-controlled-egress.ts"
+    "test:egress": "node --experimental-strip-types src/verify-controlled-egress.ts",
+    "test:worker-config": "node --experimental-strip-types src/verify-worker-config.ts",
+    "test:p1-processing": "node --experimental-strip-types src/verify-p1-processing.ts",
+    "test:homepage-collector": "node --experimental-strip-types src/verify-homepage-collector.ts",
+    "test:homepage-p1": "node --experimental-strip-types src/verify-homepage-p1.ts",
+    "test:persistence-plan": "node --experimental-strip-types src/verify-persistence-plan.ts",
+    "test:static1-runner": "node --experimental-strip-types src/verify-static1-runner.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0"
   }
 }
