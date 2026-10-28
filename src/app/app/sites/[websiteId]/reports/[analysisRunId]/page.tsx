@@ -63,7 +63,7 @@ export default async function ReportPage({ params }: PageProps) {
           <div><h1>{findings.length ? "Esto merece tu atención." : "Tu informe está listo."}</h1><p>{coverage.evaluated ?? 0} reglas evaluadas · {dateLabel(run.completed_at ?? run.created_at)} · {run.profile_id} v{run.profile_version}</p></div>
           <div className={styles.reportStamp}>Hallazgos técnicos<br />explicados con claridad</div>
         </header>
-        <ReportViewer findings={viewerFindings} status={run.status} coverage={coverage} />
+        <ReportViewer findings={viewerFindings} status={run.status} coverage={coverage} analysisRunId={run.id} />
       </section>
       <p className={styles.reportCaption}>Selecciona un hallazgo. Abre su evidencia. Las áreas no evaluadas no se muestran como aprobadas.</p>
     </main>

@@ -26,7 +26,7 @@ export default async function ReportPreviewPage() {
           <div><h1>Esto merece tu atención.</h1><p>3 reglas evaluadas · Datos controlados · Informe de ejemplo</p></div>
           <div className={styles.reportStamp}>Hallazgos de ejemplo<br />explicados con claridad</div>
         </header>
-        <ReportViewer findings={findings} status="completed" coverage={coverage} />
+        <ReportViewer findings={findings} status="completed" coverage={coverage} preview />
       </section>
       <p className={styles.reportCaption}>Selecciona un hallazgo. Abre su evidencia. Esta vista solo existe en desarrollo local.</p>
     </main>

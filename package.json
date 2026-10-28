@@ -20,7 +20,8 @@
     "test:homepage-p1": "node --experimental-strip-types analysis-worker/src/verify-homepage-p1.ts",
     "test:persistence-plan": "node --experimental-strip-types analysis-worker/src/verify-persistence-plan.ts",
     "test:static1-runner": "node --experimental-strip-types analysis-worker/src/verify-static1-runner.ts",
-    "test:report-assistant": "node --experimental-strip-types tools/verify-report-assistant.ts"
+    "test:report-assistant": "node --experimental-strip-types tools/verify-report-assistant.ts",
+    "test:gemini-report": "node --experimental-strip-types tools/verify-gemini-report.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
