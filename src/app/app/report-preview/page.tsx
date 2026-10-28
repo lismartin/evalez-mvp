@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ReportViewer } from "@/components/report-viewer";
 import styles from "@/components/workspace.module.css";
@@ -18,17 +17,13 @@ export default async function ReportPreviewPage() {
 
   return (
     <main className={styles.detailShell}>
-      <Link className="text-link" href="/app">← Volver a sitios</Link>
-      <section className={styles.previewNotice}><strong>Vista de desarrollo</strong><span>Datos controlados · No proceden de un análisis real.</span></section>
       <section className={styles.reportFrame}>
-        <div className={styles.reportBar}><span className={styles.reportLights}><i /><i /><i /></span><span>example.com / Informe de sitio web</span><span className={styles.reportTag}>Ejemplo</span></div>
         <header className={styles.reportHeader}>
           <div><h1>Esto merece tu atención.</h1><p>3 reglas evaluadas · Datos controlados · Informe de ejemplo</p></div>
           <div className={styles.reportStamp}>Hallazgos de ejemplo<br />explicados con claridad</div>
         </header>
         <ReportViewer findings={findings} status="completed" coverage={coverage} preview />
       </section>
-      <p className={styles.reportCaption}>Selecciona un hallazgo. Abre su evidencia. Esta vista solo existe en desarrollo local.</p>
     </main>
   );
 }

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import styles from "@/components/workspace.module.css";
 import { ReportViewer } from "@/components/report-viewer";
@@ -42,6 +41,7 @@ export default async function ReportPage({ params }: PageProps) {
   const evidenceByFinding = new Map((evidenceRows ?? []).map((evidence) => [evidence.finding_id, evidence]));
 
   const coverage = (run.coverage ?? {}) as { evaluated?: number; blocked?: number; notApplicable?: number };
+  const isDemo = run.profile_id === "DEMO-LOCAL";
   const viewerFindings = findings.map((finding) => {
     const evidence = evidenceByFinding.get(finding.id);
     return {
@@ -56,16 +56,13 @@ export default async function ReportPage({ params }: PageProps) {
 
   return (
     <main className={styles.detailShell}>
-      <Link className="text-link" href={`/app/sites/${website.id}`}>← Volver al sitio</Link>
       <section className={styles.reportFrame}>
-        <div className={styles.reportBar}><span className={styles.reportLights}><i /><i /><i /></span><span>{website.name} / Informe de sitio web</span><span className={styles.reportTag}>{run.status}</span></div>
         <header className={styles.reportHeader}>
-          <div><h1>{findings.length ? "Esto merece tu atención." : "Tu informe está listo."}</h1><p>{coverage.evaluated ?? 0} reglas evaluadas · {dateLabel(run.completed_at ?? run.created_at)} · {run.profile_id} v{run.profile_version}</p></div>
+          <div><h1>{findings.length ? "Esto merece tu atención." : "Tu informe está listo."}</h1><p>{coverage.evaluated ?? 0} reglas evaluadas · {dateLabel(run.completed_at ?? run.created_at)} · {run.profile_id} v{run.profile_version}{isDemo ? " · Datos de prueba" : ""}</p></div>
           <div className={styles.reportStamp}>Hallazgos técnicos<br />explicados con claridad</div>
         </header>
         <ReportViewer findings={viewerFindings} status={run.status} coverage={coverage} analysisRunId={run.id} />
       </section>
-      <p className={styles.reportCaption}>Selecciona un hallazgo. Abre su evidencia. Las áreas no evaluadas no se muestran como aprobadas.</p>
     </main>
   );
 }

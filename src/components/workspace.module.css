@@ -3,3 +3,10 @@
 .reportLink{color:#075e58;font-weight:800;text-decoration:none}.reportLink:hover{text-decoration:underline}
 .previewNotice{display:flex;justify-content:space-between;gap:14px;margin:22px 0 -8px;padding:12px 15px;border:1px solid #e8c76b;border-radius:10px;background:#fff8e7;color:#72550b;font-size:.86rem}.previewNotice span{color:#846c2b}@media(max-width:650px){.previewNotice{flex-direction:column}}
 .geminiButton{display:block;margin-top:15px;border:1px solid #6552a4;border-radius:999px;background:#fff;color:#493588;padding:9px 12px;font-size:.78rem;font-weight:800;cursor:pointer}.geminiButton:disabled{opacity:.6;cursor:wait}.geminiError{display:block;margin-top:8px;color:#8b2b29}
+.reportFrame{margin-top:0}
+.reportBody{grid-template-columns:1fr}
+.reportList{border-right:0;border-bottom:1px solid #e1e8e5}
+.detailShell{max-width:1120px}
+.reportBody{grid-template-columns:minmax(300px,.85fr) minmax(0,1.25fr)}
+.reportList{border-right:1px solid #e1e8e5;border-bottom:0}
+@media(max-width:650px){.reportBody{grid-template-columns:1fr}.reportList{border-right:0;border-bottom:1px solid #e1e8e5}}

@@ -3,10 +3,10 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { listLocalFixtureJobs } from "@/lib/local-fixture-queue";
 import styles from "@/components/workspace.module.css";
-import { enqueueFixtureRun } from "./fixture-actions";
+import { enqueueFixtureRun, seedLocalDemoReport } from "./fixture-actions";
 import { requestDnsChallenge, requestStatic1Authorization, scheduleStatic1Run } from "./host-actions";
 
-type PageProps = { params: Promise<{ websiteId: string }>; searchParams: Promise<{ fixture?: string; verification?: string; authorization?: string; run?: string }> };
+type PageProps = { params: Promise<{ websiteId: string }>; searchParams: Promise<{ fixture?: string; verification?: string; authorization?: string; run?: string; demo?: string; demoStage?: string }> };
 
 function dateLabel(value: string) {
   return new Intl.DateTimeFormat("es", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
@@ -19,7 +19,7 @@ function eventLabel(eventType: string) {
 
 export default async function WebsiteDetailPage({ params, searchParams }: PageProps) {
   const { websiteId } = await params;
-  const { fixture, verification, authorization, run } = await searchParams;
+  const { fixture, verification, authorization, run, demo, demoStage } = await searchParams;
   const supabase = await createClient();
   const { data: claimsData } = await supabase.auth.getClaims();
   const userId = claimsData?.claims?.sub;
@@ -117,6 +117,12 @@ export default async function WebsiteDetailPage({ params, searchParams }: PagePr
           <h2>Cola de fixtures</h2>
           <p>Esta cola no contacta el host registrado ni crea un informe para clientes. Solo envía datos controlados al worker local para comprobar la conexión entre componentes.</p>
           <Link className={styles.reportLink} href="/app/report-preview">Ver visualización de informe de prueba</Link>
+          <form action={seedLocalDemoReport}><input type="hidden" name="websiteId" value={website.id} /><button className="secondary-button" type="submit">Crear informe demo en Supabase</button></form>
+          {demo === "created" && <p className={styles.status}>Informe demo creado. Ábrelo desde el historial de análisis.</p>}
+          {demo === "missing-secret" && <p className={styles.error}>Falta SUPABASE_SECRET_KEY en .env.local. Esta clave solo se usa en el servidor para guardar el informe demo.</p>}
+          {demo === "no-host" && <p className={styles.error}>Registra primero un host para asociar el informe demo.</p>}
+          {demo === "forbidden" && <p className={styles.error}>Solo el propietario de la organización puede crear datos demo.</p>}
+          {demo === "error" && <p className={styles.error}>No se pudo guardar el informe demo en la etapa: {demoStage ?? "desconocida"}. Revisa la terminal donde ejecutas pnpm dev.</p>}
           {fixture === "queued" && <p className={styles.status}>Fixture encolado. Ejecuta el worker desde otra terminal.</p>}
           <form action={enqueueFixtureRun}><input type="hidden" name="websiteId" value={website.id} /><button className="primary-button" type="submit">Encolar fixture local</button></form>
           {!fixtureJobs.length ? <p>Aún no hay fixtures locales para este sitio.</p> : <ul className={styles.eventList}>{fixtureJobs.map((job) => <li key={job.id}><strong>{job.status === "queued" ? "En cola" : job.status === "running" ? "En ejecución" : "Completado"}</strong><time>{dateLabel(job.createdAt)}</time>{job.result && <p>{job.result.passed} correctas · {job.result.findings} hallazgos · {job.result.blocked} bloqueadas</p>}</li>)}</ul>}
