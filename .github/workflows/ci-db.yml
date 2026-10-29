@@ -1,0 +1,29 @@
+name: Database tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  supabase:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Install dependencies
+        run: corepack pnpm install --frozen-lockfile
+      - name: Check remote migration plan
+        run: corepack pnpm exec supabase db push --db-url "$SUPABASE_DB_URL" --dry-run
+      - name: Check reconciled remote schema
+        run: >-
+          corepack pnpm exec supabase db query --db-url "$SUPABASE_DB_URL"
+          "select 1 / case when exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'host_verification_challenges' and column_name = 'record_name') and to_regprocedure('public.schedule_authorized_static1_run(uuid,uuid)') is not null then 1 else 0 end as schema_smoke;"
