@@ -10,6 +10,8 @@
     "lint": "next lint",
     "test:rules": "node --experimental-strip-types tools/verify-p1-rule-fixtures.ts",
     "test:worker-safety": "node --experimental-strip-types analysis-worker/src/verify-safety.ts",
+    "test:address-policy": "node --experimental-strip-types analysis-worker/src/verify-address-policy.ts",
+    "test:resolve-destination": "node --experimental-strip-types analysis-worker/src/verify-resolve-destination.ts",
     "worker:fixture": "node --experimental-strip-types analysis-worker/src/run-local-fixture-job.ts",
     "test:dns": "node --experimental-strip-types analysis-worker/src/verify-dns-verifier.ts",
     "test:authorization": "node --experimental-strip-types analysis-worker/src/verify-authorization-gate.ts",
