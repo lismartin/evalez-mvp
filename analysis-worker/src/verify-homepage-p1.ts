@@ -12,7 +12,7 @@ const results = evaluateHomepageP1({
   declaredIndexable: true,
   internalLinkStatuses: { "/archivo": 404, "/contacto": 200 }
 });
-const processed = processP1Results(results);
+const processed = processP1Results(results, { organizationId: "org-1", websiteId: "site-1", host: "www.tusitio.ch", plannedRuleIds: ["LINK-001", "SEO-001"] });
 const actual = {
   outcomes: results.map((result) => `${result.ruleId}:${result.outcome}`),
   executions: processed.ruleExecutions.length,

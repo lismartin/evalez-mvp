@@ -31,7 +31,7 @@ export function buildP1PersistencePlan(
   processed: ProcessedP1Results,
   observedAt: string
 ): P1PersistencePlan {
-  const finalStatus = processed.coverage.blocked > 0 ? "partially_completed" : "completed";
+  const finalStatus = processed.coverage.blockedOrFailed > 0 || processed.coverage.skipped > 0 ? "partially_completed" : "completed";
   return {
     ruleExecutions: processed.ruleExecutions.map((execution) => ({
       analysis_run_id: context.analysisRunId,
