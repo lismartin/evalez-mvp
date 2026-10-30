@@ -1,49 +1,54 @@
 # evalez MVP local
 
-Aplicación inicial en TypeScript y Next.js para convertir el recorrido de producto de evalez en una interfaz mantenible.
+Aplicación local de evalez para el MVP interno STATIC-1. Permite que una organización registre un sitio propio, prepare el control del host y consulte los resultados técnicos que estén disponibles para su organización.
 
 ## Estado actual
 
-La ruta `/` sirve la landing V3 local aprobada, conservada en `public/landing-v3/index.html`. Su fuente original está en `../landing/v3.template.html` y debe actualizarse allí antes de copiar una nueva versión.
+| Bloque | Estado |
+| --- | --- |
+| Autenticación | Registro, inicio de sesión, confirmación y cierre de sesión con Supabase. |
+| Organizaciones y sitios | Una persona autenticada puede crear su organización, registrar sitios y hosts exactos, con aislamiento por organización. |
+| Desafío DNS | Se crea y muestra un desafío TXT para el host. La comprobación DNS real sigue pendiente. |
+| Autorización de análisis | Se puede solicitar autorización para STATIC-1; falta la aprobación real por personal interno. |
+| Worker | Hay contratos, reserva, límites, política de destino, recolector de portada y piezas de persistencia. Aún no existe el comando que ejecute un análisis real completo. |
+| Reglas | Hay implementaciones y fixtures para TLS-001, LINK-001 y SEO-001; la conexión completa de las reglas a un análisis autorizado sigue pendiente. |
+| Informe | Hay informes locales y vistas de resultados persistidos; la cobertura y el estado final todavía no representan el recorrido STATIC-1 completo. |
+| Gemini | En desarrollo local y a demanda, genera explicaciones solo a partir del hallazgo y su evidencia. T21 lo dejará activo por defecto para informes reales. |
 
-La ruta `/app` implementa el recorrido de demostración: registrar un host, simular la autorización DNS, seleccionar las tres reglas iniciales y consultar un informe de muestra. No realiza autenticación, verificación DNS, análisis de red, persistencia ni llamadas de IA reales.
+No se debe presentar esta aplicación como un escáner público ni analizar hosts ajenos. Un análisis real del MVP exigirá una prueba DNS vigente y una autorización aprobada antes de cualquier tráfico.
 
-Los resultados se identifican como datos de demostración. No deben presentarse como análisis de una web.
+## Pendiente para el MVP
 
-La base de integración con Supabase está preparada en `supabase/schema.sql` y `.env.example`, pero aún no hay credenciales ni un proyecto externo conectado. El esquema crea las entidades iniciales de organización, miembros, sitios y hosts, con aislamiento por organización mediante RLS.
+- Comprobación DNS real, token protegido y revocación del control.
+- Aprobación interna de la autorización STATIC-1 y aplicación de sus transiciones de estado.
+- Worker ejecutable que revalide la autorización y el DNS, haga conexiones con egreso seguro y cierre siempre cada ejecución.
+- Persistencia atómica, cobertura e informe honesto de los resultados reales.
+- Sitio propio de prueba y recorrido de aceptación local.
+
+El desglose de estas tareas está fuera de este repositorio en el plan del MVP, carpeta `evalez-mvp-plan`; pídelo al PM. Pendiente: documentos de alcance citados por el plan del 27-10 (pedidos al equipo).
 
 ## Ejecutar localmente
 
-1. Instala Node.js LTS. El proyecto usa pnpm 11.1.1 mediante Corepack.
-2. Activa pnpm una sola vez: `corepack enable`.
-3. En esta carpeta, ejecuta `pnpm install`. Esto creará `pnpm-lock.yaml`; no uses npm ni generes `package-lock.json`.
-4. Ejecuta `pnpm dev`.
-5. Abre la dirección local indicada por Next.js.
+1. Instala Node.js 22 o superior y habilita Corepack: `corepack enable`.
+2. Instala las dependencias bloqueadas: `corepack pnpm install --frozen-lockfile`.
+3. Copia `.env.example` a `.env.local` y completa las variables públicas de Supabase para tu entorno local.
+4. Inicia la aplicación: `corepack pnpm dev`.
+5. Abre la dirección local que indique Next.js.
 
-## Conectar Supabase
+La clave `SUPABASE_SECRET_KEY` pertenece únicamente a rutas de servidor y al futuro worker: nunca la añadas al navegador ni a Git. Para probar Gemini en desarrollo local, define `AI_API_KEY` en `.env.local`; si falta, la aplicación mantiene su explicación determinista.
 
-1. Crear un proyecto de Supabase para desarrollo.
-2. Ejecutar `supabase/schema.sql` en el SQL Editor del proyecto.
-3. Copiar `.env.example` como `.env.local` y completar `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. La clave secreta se deja vacía hasta que exista un worker o ruta de servidor que realmente la necesite.
-4. Instalar las dependencias desde una red con acceso a npm: `pnpm add @supabase/ssr @supabase/supabase-js`.
-5. Implementar la autenticación y las rutas protegidas. No uses la clave de servicio en componentes del navegador.
+## Pruebas y comprobaciones
 
-En Supabase, configura en **Auth > URL Configuration** la URL del sitio como `http://localhost:3000` y añade `http://localhost:3000/auth/confirm` como URL de redirección. Antes de desplegar en Vercel, añade también la URL de producción equivalente.
+```sh
+corepack pnpm test
+corepack pnpm typecheck
+corepack pnpm build
+```
 
-## Siguientes módulos
+También hay comprobaciones por área, por ejemplo `corepack pnpm test:rules`, `corepack pnpm test:dns`, `corepack pnpm test:authorization` y `corepack pnpm test:worker-safety`. Consulta `package.json` para la lista completa.
 
-1. Conectar Supabase: autenticación, organizaciones y rutas protegidas.
-2. Autorización DNS real, revocación y auditoría.
-3. Cola y worker aislado con salida de red controlada.
-4. Reglas TLS-001, LINK-001 y SEO-001 con pruebas.
-5. Informe persistente e integración de IA con salida estructurada.
+## Límites conocidos
 
-## Reglas controladas
-
-Las primeras reglas P1 se implementan primero como funciones puras, sin solicitudes de red. Sus fixtures controlados se ejecutan con `pnpm test:rules`. El worker aislado conectará estas reglas a observaciones reales solo después de implementar la autorización y los límites de red.
-
-## Worker separado
-
-`analysis-worker/` contiene el contrato y las barreras iniciales del worker de análisis. Sus pruebas se ejecutan con `pnpm test:worker-safety`; no se conectan a la red ni a Supabase. La cola y el proveedor donde se ejecutará el worker siguen pendientes de elección.
-
-Las decisiones de alcance e infraestructura se encuentran en `../planning/`.
+- El entorno es local; no hay despliegue ni servicio externo publicado.
+- Las pruebas con fixtures no equivalen a comprobar un host real.
+- La documentación final del recorrido interno se completará cuando exista la aceptación de punta a punta.
