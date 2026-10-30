@@ -18,6 +18,7 @@
     "test:dns": "node --experimental-strip-types analysis-worker/src/verify-dns-verifier.ts",
     "test:authorization": "node --experimental-strip-types analysis-worker/src/verify-authorization-gate.ts",
     "test:egress": "node --experimental-strip-types analysis-worker/src/verify-controlled-egress.ts",
+    "test:node-transport": "node --experimental-strip-types analysis-worker/src/verify-node-transport.ts",
     "test:worker-config": "node --experimental-strip-types analysis-worker/src/verify-worker-config.ts",
     "test:p1-processing": "node --experimental-strip-types analysis-worker/src/verify-p1-processing.ts",
     "test:homepage-collector": "node --experimental-strip-types analysis-worker/src/verify-homepage-collector.ts",

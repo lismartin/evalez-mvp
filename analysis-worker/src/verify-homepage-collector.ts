@@ -14,7 +14,9 @@ const transport: HttpTransport = {
   }
 };
 
-const collection = await collectHomepage(new ControlledEgress(["www.tusitio.ch"], transport), "www.tusitio.ch");
+const collection = await collectHomepage(new ControlledEgress(["www.tusitio.ch"], transport, undefined, undefined, {
+  resolver: { lookupAll: async () => [{ address: "8.8.8.8", family: 4 }] }
+}), "www.tusitio.ch");
 assert.equal(collection.collected, true);
 if (!collection.collected) throw new Error("La portada simulada debería poder recolectarse.");
 
