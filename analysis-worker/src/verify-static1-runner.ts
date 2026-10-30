@@ -25,7 +25,7 @@ const result = await runOneStatic1Analysis({
   egress: new ControlledEgress(["www.tusitio.ch"], transport, undefined, scheduler),
   tlsProbe: { inspect: async () => ({ protocol: "https", certificate: { validForHost: true, chainTrusted: true, expiresAt: "2027-10-27T15:00:00Z" } }) },
   persist: async (_context, processed) => {
-    persisted = { executions: processed.ruleExecutions.length, findings: processed.findings.length, status: processed.coverage.blocked ? "partially_completed" : "completed" };
+    persisted = { executions: processed.ruleExecutions.length, findings: processed.findings.length, status: processed.coverage.blockedOrFailed || processed.coverage.skipped ? "partially_completed" : "completed" };
     return "completed";
   },
   now: () => "2026-10-27T15:00:00Z"

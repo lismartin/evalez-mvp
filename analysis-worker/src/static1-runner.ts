@@ -51,7 +51,7 @@ export async function runOneStatic1Analysis(dependencies: Static1RunnerDependenc
     }));
   }
 
-  const processed = processP1Results(results);
+  const processed = processP1Results(results, { organizationId: run.organization_id, websiteId: run.website_id, host: target.hostname, plannedRuleIds: ["TLS-001", "LINK-001", "SEO-001"] });
   const status = await dependencies.persist({
     analysisRunId: run.id,
     organizationId: run.organization_id,
