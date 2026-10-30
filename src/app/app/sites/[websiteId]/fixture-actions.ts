@@ -1,10 +1,10 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js";
 import { enqueueLocalFixtureJob } from "@/lib/local-fixture-queue";
 import { buildLocalDemoReport } from "@/lib/demo-report";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function enqueueFixtureRun(formData: FormData) {
   if (process.env.NODE_ENV === "production") redirect("/app");
@@ -48,9 +48,12 @@ export async function seedLocalDemoReport(formData: FormData) {
   const host = website?.website_hosts?.[0];
   if (!website || !host) redirect(`/app/sites/${websiteId}?demo=no-host`);
 
-  const secretKey = process.env.SUPABASE_SECRET_KEY;
-  if (!secretKey) redirect(`/app/sites/${websiteId}?demo=missing-secret`);
-  const admin = createSupabaseAdminClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, secretKey, { auth: { autoRefreshToken: false, persistSession: false } });
+  let admin;
+  try {
+    admin = createAdminClient();
+  } catch {
+    redirect(`/app/sites/${websiteId}?demo=missing-secret`);
+  }
   const observedAt = new Date().toISOString();
   const demo = buildLocalDemoReport({ organizationId: membership.organization_id, websiteId: website.id, websiteHostId: host.id, userId, observedAt });
 

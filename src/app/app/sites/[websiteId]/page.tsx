@@ -119,7 +119,7 @@ export default async function WebsiteDetailPage({ params, searchParams }: PagePr
           <Link className={styles.reportLink} href="/app/report-preview">Ver visualización de informe de prueba</Link>
           <form action={seedLocalDemoReport}><input type="hidden" name="websiteId" value={website.id} /><button className="secondary-button" type="submit">Crear informe demo en Supabase</button></form>
           {demo === "created" && <p className={styles.status}>Informe demo creado. Ábrelo desde el historial de análisis.</p>}
-          {demo === "missing-secret" && <p className={styles.error}>Falta SUPABASE_SECRET_KEY en .env.local. Esta clave solo se usa en el servidor para guardar el informe demo.</p>}
+          {demo === "missing-secret" && <p className={styles.error}>Falta configurar la clave de servidor para guardar el informe demo.</p>}
           {demo === "no-host" && <p className={styles.error}>Registra primero un host para asociar el informe demo.</p>}
           {demo === "forbidden" && <p className={styles.error}>Solo el propietario de la organización puede crear datos demo.</p>}
           {demo === "error" && <p className={styles.error}>No se pudo guardar el informe demo en la etapa: {demoStage ?? "desconocida"}. Revisa la terminal donde ejecutas pnpm dev.</p>}
