@@ -8,8 +8,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "node --experimental-strip-types tools/run-all-tests.ts",
+    "typecheck": "tsc --noEmit",
     "test:rules": "node --experimental-strip-types tools/verify-p1-rule-fixtures.ts",
     "test:worker-safety": "node --experimental-strip-types analysis-worker/src/verify-safety.ts",
+    "test:address-policy": "node --experimental-strip-types analysis-worker/src/verify-address-policy.ts",
+    "test:resolve-destination": "node --experimental-strip-types analysis-worker/src/verify-resolve-destination.ts",
     "worker:fixture": "node --experimental-strip-types analysis-worker/src/run-local-fixture-job.ts",
     "test:dns": "node --experimental-strip-types analysis-worker/src/verify-dns-verifier.ts",
     "test:authorization": "node --experimental-strip-types analysis-worker/src/verify-authorization-gate.ts",
@@ -27,15 +31,14 @@
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.118.0",
-    "next": "latest",
-    "react": "latest",
-    "react-dom": "latest"
+    "next": "16.4.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
-    "@types/node": "latest",
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
-    "supabase": "^2.122.0",
-    "typescript": "latest"
+    "@types/node": "26.6.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "typescript": "7.0.2"
   }
 }
