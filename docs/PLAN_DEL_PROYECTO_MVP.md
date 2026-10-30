@@ -1,60 +1,55 @@
 # Plan del proyecto evalez MVP
 
 **Estado:** implementación local en curso  
-**Referencia de producto:** `evalez_SPEC_V3.0.txt`  
-**Última actualización:** 27 de octubre de 2026
+**Referencia de producto:** SPEC 3.0 (solicitar al PM)
+**Última actualización:** 30 de octubre de 2026
 
 ## Objetivo
 
-Construir un MVP de evalez que permita a una empresa registrar un sitio web bajo su control, autorizar un análisis técnico y recibir un informe con evidencia. El sistema no debe realizar comprobaciones externas antes de que el host exacto esté verificado y autorizado.
+Construir un MVP interno de evalez para que una organización registre un sitio bajo su control, obtenga autorización para un análisis técnico y consulte un informe con evidencia. Antes de cualquier comprobación externa, el host exacto debe mantener una prueba de control y una autorización vigente.
 
-## Etapa 1 · Base de producto
+## Etapa 1 - Base de producto
 
 Completada localmente.
 
-- Landing de referencia integrada en la ruta raíz.
-- Aplicación con Next.js y TypeScript.
-- Registro, inicio de sesión y sesión de usuario con Supabase.
-- Creación de organización, sitios y hosts exactos.
-- Esquema de datos inicial, control de acceso por organización y auditoría básica.
+- Landing local y aplicación con Next.js y TypeScript.
+- Registro, inicio de sesión y sesiones con Supabase.
+- Organizaciones, miembros, sitios y hosts exactos, aislados por organización.
+- Esquema de datos, RLS y auditoría básica.
 
-## Etapa 2 · Seguridad previa al análisis
+## Etapa 2 - Seguridad previa al análisis
 
-Avanzada localmente.
+En curso; no debe describirse como avanzada ni completa.
 
-- Perfil de red `STATIC-1` con límites de rastreo, duración y solicitudes.
-- Bloqueo de métodos HTTP no permitidos, hosts ajenos, IP privadas y puertos no permitidos.
-- Desafío DNS para demostrar control del host.
-- Solicitud de autorización separada del control DNS.
-- Compuerta que exige DNS verificado y autorización aprobada para `STATIC-1 v1`.
-- Una ejecución solo puede programarse cuando se mantienen ambas condiciones.
+- Existe el perfil STATIC-1 con límites, política de métodos, hosts, puertos y destinos.
+- Existe un desafío DNS y la solicitud de autorización separada.
+- Falta verificar el TXT contra DNS real, proteger el token del desafío y permitir la revocación efectiva.
+- Falta la aprobación interna de solicitudes y la aplicación completa de las transiciones de estado.
+- La compuerta de autorización y las migraciones son una base; el análisis real no puede depender todavía de ellas como garantía final.
 
-## Etapa 3 · Worker y motor de análisis
+## Etapa 3 - Worker y motor de análisis
 
-Siguiente etapa.
+En curso por partes.
 
-- El worker aislado reclamará ejecuciones programadas de forma atómica.
-- Antes de cada conexión validará el host, perfil, método, puerto, presupuesto y destino.
-- Se implementarán primero las reglas P1: TLS/HTTPS, enlaces internos y directivas SEO `noindex`.
-- Se guardarán ejecuciones de regla, evidencia y hallazgos en Supabase.
-- Las pruebas locales actuales usan fixtures; no contactan hosts externos.
+- Hay adaptadores de reserva, presupuesto, política de egreso, recolección de portada, procesamiento de reglas y persistencia.
+- TLS-001, LINK-001 y SEO-001 tienen lógica y fixtures controlados.
+- Falta un proceso ejecutable que revalide DNS y autorización antes de cada solicitud, haga el sondeo TLS y persista el resultado completo de forma atómica.
+- Las pruebas actuales no autorizan tráfico hacia hosts reales.
 
-## Etapa 4 · Informe
+## Etapa 4 - Informe
 
-- Historial de ejecuciones por sitio.
-- Informe protegido con resultados, evidencia y cobertura del análisis.
-- Recomendaciones explicadas en lenguaje claro.
-- La IA, cuando se conecte, solo redactará explicaciones a partir de hallazgos técnicos existentes; no decidirá ni inventará resultados.
+Base local disponible; recorrido real pendiente.
 
-## Etapa 5 · Preparación para publicar
+- Existen vistas de informe, evidencia y explicaciones deterministas.
+- Gemini puede generar una explicación a demanda solo en desarrollo local, a partir de hallazgos y evidencia ya guardados.
+- Falta que el informe se alimente exclusivamente de una instantánea real, muestre cobertura y comunique estados parciales, cancelados o fallidos sin prometer éxito.
 
-- Desplegar la aplicación web en Vercel.
-- Configurar el dominio y DNS en Cloudflare.
-- Desplegar el worker como servicio aislado, fuera de Vercel.
-- Seleccionar proveedor de IA, correo, monitoreo, copias de seguridad y operación de incidentes.
-- Validar región, tratamiento de datos, subprocesadores y contrato de datos antes de abrir el servicio a terceros.
-- Ejecutar una prueba con un sitio web real cuya autorización esté documentada.
+## Etapa 5 - Aceptación interna
 
-## Estado actual y siguiente resultado esperado
+Pendiente.
 
-El MVP ya puede registrar el contexto de una empresa y proteger la programación de análisis. El próximo resultado es un worker capaz de tomar una ejecución `scheduled`, aplicar sus barreras de seguridad y procesar las reglas P1 sin salir del alcance autorizado.
+- Preparar un sitio de prueba propio con TLS y errores controlados.
+- Completar el recorrido local: DNS, autorización interna, análisis, informe, revocación y aislamiento entre organizaciones.
+- No hay despliegue, piloto externo, facturación ni garantías comerciales dentro de este MVP.
+
+El trabajo detallado está en el plan del MVP, carpeta `evalez-mvp-plan`, que se solicita al PM. Pendiente: documentos de alcance citados por el plan del 27-10 (pedidos al equipo).
