@@ -19,6 +19,7 @@
     "test:authorization": "node --experimental-strip-types analysis-worker/src/verify-authorization-gate.ts",
     "test:egress": "node --experimental-strip-types analysis-worker/src/verify-controlled-egress.ts",
     "test:node-transport": "node --experimental-strip-types analysis-worker/src/verify-node-transport.ts",
+    "test:tls-probe": "node --experimental-strip-types analysis-worker/src/verify-tls-probe.ts",
     "test:worker-config": "node --experimental-strip-types analysis-worker/src/verify-worker-config.ts",
     "test:p1-processing": "node --experimental-strip-types analysis-worker/src/verify-p1-processing.ts",
     "test:homepage-collector": "node --experimental-strip-types analysis-worker/src/verify-homepage-collector.ts",
@@ -40,6 +41,7 @@
     "@types/node": "26.6.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
+    "selfsigned": "5.5.0",
     "supabase": "^2.122.0",
     "typescript": "7.0.2"
   }
