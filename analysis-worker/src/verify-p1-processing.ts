@@ -47,3 +47,11 @@ assert.deepEqual(planned.coverage, { planned: 3, successful: 0, blockedOrFailed:
 assert.equal(planned.findings.length, 1, "Un destino roto compartido forma un solo hallazgo");
 assert.deepEqual(planned.findings[0]?.evidence.source_paths, ["/", "/contacto"]);
 assert.equal(planned.ruleExecutions.find((execution) => execution.ruleId === "LINK-001")?.executionStatus, "failed");
+
+const missingHomepage = processP1Results([
+  evaluateTls001({ protocol: "https", observedAt: "2026-10-27T12:00:00Z", certificate: { validForHost: true, chainTrusted: true, expiresAt: "2027-10-27T12:00:00Z" } })
+], context);
+assert.equal(missingHomepage.ruleExecutions.length, 3, "Cada regla planificada deja una ejecucion aunque falte la portada");
+assert.deepEqual(missingHomepage.coverage, { planned: 3, successful: 1, blockedOrFailed: 0, skipped: 2 });
+assert.equal(missingHomepage.ruleExecutions.find((execution) => execution.ruleId === "SEO-001")?.executionStatus, "skipped");
+assert.equal(missingHomepage.ruleExecutions.find((execution) => execution.ruleId === "LINK-001")?.executionStatus, "skipped");
