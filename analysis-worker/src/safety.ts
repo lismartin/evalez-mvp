@@ -19,16 +19,6 @@ export function isIpv4Literal(host: string) {
   return parts.length === 4 && parts.every((part) => /^\d+$/.test(part) && Number(part) >= 0 && Number(part) <= 255);
 }
 
-export function isBlockedIpv4(host: string) {
-  if (!isIpv4Literal(host)) return false;
-  const [a, b] = host.split(".").map(Number);
-  return a === 0 || a === 10 || a === 127 || a >= 224 ||
-    (a === 100 && b >= 64 && b <= 127) ||
-    (a === 169 && b === 254) ||
-    (a === 172 && b >= 16 && b <= 31) ||
-    (a === 192 && b === 168);
-}
-
 export function canStartStatic1Job(input: {
   requestedHost: string;
   authorizedHosts: string[];
@@ -38,7 +28,7 @@ export function canStartStatic1Job(input: {
 }) {
   const requestedHost = normalizeAuthorizedHost(input.requestedHost);
   if (!input.authorizationValid) return { allowed: false, reason: "authorization_missing" as const };
-  if (!requestedHost || isBlockedIpv4(input.requestedHost)) return { allowed: false, reason: "destination_blocked" as const };
+  if (!requestedHost) return { allowed: false, reason: "destination_blocked" as const };
   const authorized = input.authorizedHosts.map(normalizeAuthorizedHost).filter(Boolean);
   if (!authorized.includes(requestedHost)) return { allowed: false, reason: "host_not_authorized" as const };
   if (input.nowMs - input.startedAtMs > STATIC_1_LIMITS.runTimeoutMs) return { allowed: false, reason: "time_budget_exhausted" as const };

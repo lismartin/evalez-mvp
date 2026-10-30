@@ -22,7 +22,9 @@ const result = await runOneStatic1Analysis({
     profile_id: "STATIC-1", profile_version: "1", requested_by: "user-1", scheduled_at: "2026-10-27T15:00:00Z"
   }),
   loadTarget: async () => ({ hostname: "www.tusitio.ch", intendedIndexability: true }),
-  egress: new ControlledEgress(["www.tusitio.ch"], transport, undefined, scheduler),
+  egress: new ControlledEgress(["www.tusitio.ch"], transport, undefined, scheduler, {
+    resolver: { lookupAll: async () => [{ address: "8.8.8.8", family: 4 }] }
+  }),
   tlsProbe: { inspect: async () => ({ protocol: "https", certificate: { validForHost: true, chainTrusted: true, expiresAt: "2027-10-27T15:00:00Z" } }) },
   persist: async (_context, processed) => {
     persisted = { executions: processed.ruleExecutions.length, findings: processed.findings.length, status: processed.coverage.blockedOrFailed || processed.coverage.skipped ? "partially_completed" : "completed" };
